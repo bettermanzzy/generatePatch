@@ -1,21 +1,28 @@
 import requests
-import sys
+import random
+import os
 
 if __name__ == '__main__':
 
-    if sys.argv:
 
-        commitNum = len(sys.argv) - 1
+    commitUrl = input("Please input your commit Url: \n")
+
+    if commitUrl:
+
+        commitArray = commitUrl.split(" ")
+        commitNum = len(commitArray)-1
         patchString2 = ""
+        patchFileName = ""
 
         for index in range(commitNum):
 
-            urlArray = sys.argv[index+1].split("/")
+            urlArray = commitArray[index].split("/")
             userName = urlArray[3]
             reposName = urlArray[4]
             commitId = urlArray[6]
 
             url = "https://api.github.com/repos/" + userName + "/" + reposName +"/compare/" + commitId + "^..." + commitId
+            patchFileName = patchFileName + reposName
             response = requests.get(url)
 
             html = response.json()
@@ -27,8 +34,11 @@ if __name__ == '__main__':
 
             patchString2 = patchString2 + patchString
 
-        fh = open("CVE.patch","w")
+        patchFileName = patchFileName + str(random.randint(1,100)) + ".patch"
+        print(patchFileName)
+        fh = open(patchFileName,"w")
         fh.write(patchString2)
         fh.close()
+        os.system("pause")
 
 
